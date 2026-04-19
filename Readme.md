@@ -359,7 +359,6 @@ MIT License - feel free to use this in your portfolio or commercial projects.
 - News sources: Times of India, NDTV, Indian Express, The Hindu, India Today, Business Standard, FirstPost, The Quint, National Herald, Free Press Journal, OpIndia, ABP Live, Siasat, OneIndia, Organiser, TFI Post, The Better India, Hindu Business Line, and 21 others
 - Database: [Neon](https://neon.tech) for serverless PostgreSQL
 - Deployment: [Vercel](https://vercel.com) for seamless hosting
-- Visualization: [Plotly](https://plotly.com) for interactive maps
 
 ---
 
