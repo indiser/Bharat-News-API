@@ -1,0 +1,15 @@
+name: Hourly News Fetcher
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Runs at minute 0 of every hour
+  workflow_dispatch: # Allows you to trigger it manually from the GitHub UI
+
+jobs:
+  update-database:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel Update Route
+        run: |
+          curl -X GET "${{ secrets.API_URL }}/api/cron/update" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
