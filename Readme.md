@@ -84,7 +84,7 @@ Vercel account (for deployment)
 
 1. **Clone & Install**
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/indiser/Bharat-News-API.git
 cd Bharat-News-Api
 pip install -r requirements.txt
 ```
