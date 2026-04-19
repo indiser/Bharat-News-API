@@ -297,7 +297,6 @@ Bharat-News-Api/
 ├── main.py                      # FastAPI app + endpoints
 ├── fetch_news.py                # Async RSS aggregator
 ├── process_data_india.py        # NLP + DB writer
-├── indian_visualizer.py         # Plotly heatmap generator
 ├── seed.py                      # Initial DB setup
 ├── india_locations_cities.csv   # Geographic reference data
 ├── requirements.txt             # Python dependencies
