@@ -1,6 +1,6 @@
 # 🇮🇳 Bharat News API
 
-> **Real-time geospatial news intelligence for India** — A serverless FastAPI pipeline that aggregates 40+ RSS feeds, processes 1000+ articles hourly, and maps breaking news to Indian states with sub-second latency.
+> **Real-time geospatial news intelligence for India** — A serverless FastAPI pipeline that aggregates 39 RSS feeds, processes 1000+ articles hourly, and maps breaking news to Indian states with sub-second latency via GitHub Actions automation.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
@@ -13,9 +13,9 @@
 
 This isn't just another news aggregator. It's a **production-grade geospatial intelligence system** that:
 
-- ⚡ **Processes 40+ RSS feeds concurrently** using async/await patterns
-- 🗺️ **Maps news to 36 Indian states/UTs** with city-level granularity (500+ cities)
-- 🔄 **Auto-updates every hour** via Vercel Cron (zero manual intervention)
+- ⚡ **Processes 39 RSS feeds concurrently** using async/await patterns
+- 🗺️ **Maps news to 36 Indian states/UTs** with city-level granularity (600+ cities)
+- 🔄 **Auto-updates every hour** via GitHub Actions (zero manual intervention)
 - 🚀 **Serverless architecture** — scales from 0 to 1M requests seamlessly
 - 📊 **Powers real-time heatmaps** with Plotly integration
 - 🔒 **Secured cron endpoints** with Bearer token authentication
@@ -26,8 +26,8 @@ This isn't just another news aggregator. It's a **production-grade geospatial in
 
 ```
 ┌─────────────────┐
-│  Vercel Cron    │  ← Triggers every hour
-│  (Scheduler)    │
+│ GitHub Actions  │  ← Triggers every hour
+│  (Cron Job)     │
 └────────┬────────┘
          │
          ▼
@@ -40,7 +40,7 @@ This isn't just another news aggregator. It's a **production-grade geospatial in
 │                 ▼                                │
 │  ┌──────────────────────────────────────────┐  │
 │  │   fetch_news.py (Async Aggregator)       │  │
-│  │   • 40 concurrent aiohttp requests       │  │
+│  │   • 39 concurrent aiohttp requests       │  │
 │  │   • Feedparser for RSS parsing           │  │
 │  │   • 10s timeout per feed                 │  │
 │  └──────────────┬───────────────────────────┘  │
@@ -48,7 +48,7 @@ This isn't just another news aggregator. It's a **production-grade geospatial in
 │                 ▼                                │
 │  ┌──────────────────────────────────────────┐  │
 │  │  process_data_india.py (NLP Engine)      │  │
-│  │   • Fuzzy matching against 500+ cities   │  │
+│  │   • Fuzzy matching against 600+ cities   │  │
 │  │   • State-level aggregation              │  │
 │  │   • JSON serialization for headlines     │  │
 │  └──────────────┬───────────────────────────┘  │
@@ -171,6 +171,7 @@ Authorization: Bearer <CRON_SECRET>
 | **Database** | Neon PostgreSQL | Serverless, auto-scaling, generous free tier |
 | **ORM** | SQLAlchemy | Production-grade, prevents SQL injection |
 | **Deployment** | Vercel | Zero-config serverless, built-in cron |
+| **Automation** | GitHub Actions | Hourly cron job with manual trigger support |
 | **Visualization** | Plotly Express | Interactive geospatial heatmaps |
 
 ---
@@ -178,16 +179,16 @@ Authorization: Bearer <CRON_SECRET>
 ## 📊 Data Pipeline
 
 ### 1. **Aggregation** (`fetch_news.py`)
-- Fetches from 40 curated Indian news sources
-- Concurrent requests with 10s timeout
-- Handles malformed feeds gracefully
+- Fetches from 39 curated Indian news sources (TOI, NDTV, Indian Express, The Hindu, India Today, Business Standard, FirstPost, OpIndia, ABP Live, The Quint, etc.)
+- Concurrent requests with 10s timeout per feed
+- Handles malformed feeds gracefully with `feed.bozo` error checking
 - Returns ~1000 articles per run
 
 ### 2. **Processing** (`process_data_india.py`)
-- Loads `india_locations_cities.csv` (36 states, 500+ cities)
-- Fuzzy text matching: `" {city_name} "` in `" {headline} "`
-- Aggregates headlines per state
-- Serializes arrays to JSON for PostgreSQL storage
+- Loads `india_locations_cities.csv` (36 states/UTs, 600+ cities)
+- Fuzzy text matching: `" {city_name} "` in `" {headline} "` (space-padded for accuracy)
+- Aggregates headlines per state with deduplication
+- Serializes headline arrays to JSON strings for PostgreSQL JSONB compatibility
 
 ### 3. **Storage**
 - Replaces entire `heatmap_data` table (idempotent)
@@ -256,9 +257,17 @@ git push -u origin main
   - `CRON_SECRET`
 - Deploy!
 
-3. **Verify Cron**
-- Check Vercel dashboard → Cron Jobs
-- Should run hourly at `:00`
+3. **Configure GitHub Actions**
+- Go to GitHub repo → Settings → Secrets and variables → Actions
+- Add repository secrets:
+  - `API_URL` (your Vercel deployment URL)
+  - `CRON_SECRET` (same as in Vercel)
+- GitHub Actions will automatically trigger hourly updates
+
+4. **Verify Automation**
+- Check GitHub Actions tab → "Hourly News Fetcher" workflow
+- Should run every hour at `:00`
+- Can also trigger manually via "Run workflow" button
 
 ---
 
@@ -282,6 +291,9 @@ curl -H "Authorization: Bearer your-secret" \
 
 ```
 Bharat-News-Api/
+├── .github/
+│   └── workflows/
+│       └── cron.yaml             # GitHub Actions hourly trigger
 ├── main.py                      # FastAPI app + endpoints
 ├── fetch_news.py                # Async RSS aggregator
 ├── process_data_india.py        # NLP + DB writer
@@ -301,7 +313,7 @@ Bharat-News-Api/
 2. **Serverless Architecture**: Stateless design, idempotent operations
 3. **Data Engineering**: ETL pipeline (Extract → Transform → Load)
 4. **API Design**: RESTful conventions, proper status codes, CORS
-5. **DevOps**: Environment management, cron scheduling, zero-downtime deploys
+5. **DevOps**: Environment management, GitHub Actions automation, zero-downtime deploys
 6. **Geospatial Analysis**: Coordinate-based data mapping
 7. **Production Practices**: Error handling, logging, secrets management
 
@@ -338,14 +350,14 @@ MIT License - feel free to use this in your portfolio or commercial projects.
 
 ## 👨‍💻 Author
 
-**Your Name**  
-[GitHub](https://github.com/yourusername) • [LinkedIn](https://linkedin.com/in/yourprofile) • [Portfolio](https://yoursite.com)
+**Indiser**  
+[GitHub](https://github.com/indiser) • [LinkedIn](https://linkedin.com/in/yourprofile) • [Portfolio](https://yoursite.com)
 
 ---
 
 ## 🙏 Acknowledgments
 
-- News sources: TOI, NDTV, The Hindu, Indian Express, and 36 others
+- News sources: Times of India, NDTV, Indian Express, The Hindu, India Today, Business Standard, FirstPost, The Quint, National Herald, Free Press Journal, OpIndia, ABP Live, Siasat, OneIndia, Organiser, TFI Post, The Better India, Hindu Business Line, and 21 others
 - Database: [Neon](https://neon.tech) for serverless PostgreSQL
 - Deployment: [Vercel](https://vercel.com) for seamless hosting
 - Visualization: [Plotly](https://plotly.com) for interactive maps
