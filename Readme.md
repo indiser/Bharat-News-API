@@ -351,7 +351,7 @@ MIT License - feel free to use this in your portfolio or commercial projects.
 ## 👨‍💻 Author
 
 **Indiser**  
-[GitHub](https://github.com/indiser) • [LinkedIn](https://linkedin.com/in/yourprofile) • [Portfolio](https://yoursite.com)
+[GitHub](https://github.com/indiser) • [LinkedIn](https://linkedin.com/in/yourprofile) • [Portfolio](https://my-protfolio-website-xi.vercel.app/)
 
 ---
 
