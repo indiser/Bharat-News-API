@@ -20,7 +20,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pandas sqlalchemy psycopg2-binary feedparser aiohttp python-dotenv
+          pip install pandas sqlalchemy psycopg2-binary feedparser aiohttp python-dotenv pytz fastapi 
 
       - name: Run Pipeline and Update Neon Database
         env:
