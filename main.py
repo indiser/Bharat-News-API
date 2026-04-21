@@ -100,3 +100,27 @@ async def trigger_update(authorization: str = Header(None)):
         return {"status": "success", "message": "Database updated successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Pipeline failed: {str(e)}")
+
+
+@app.get("/api/health")
+async def health_check():
+    """Instantly verify the freshness of the database."""
+    try:
+        db_url = os.environ.get("DATABASE_URL")
+        if not db_url:
+            raise HTTPException(status_code=500, detail="Database not configured.")
+            
+        engine = create_engine(db_url)
+        # Fetch only the timestamp from a single row
+        query = 'SELECT last_updated FROM heatmap_data LIMIT 1'
+        df = pd.read_sql(query, engine)
+        
+        if df.empty:
+            return {"status": "empty", "last_updated": None}
+            
+        return {
+            "status": "healthy", 
+            "last_updated": df['last_updated'].iloc[0]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
