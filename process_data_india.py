@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 from dotenv import load_dotenv
 import json
 from datetime import datetime, timezone
+import pytz
 
 load_dotenv()
 
@@ -69,7 +70,7 @@ def process_and_push_to_db(news_data):
         df_final.drop("cities", axis=1, inplace=True)
     
     current_time = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
-    df_final['last_updated'] = current_time
+    df_final['last_updated'] = pytz.utc.localize(datetime.strptime(current_time,'%Y-%m-%d %H:%M:%S')).astimezone(pytz.timezone("Asia/Kolkata")).strftime('%Y-%m-%d %I:%M:%S %p')
 
     db_url = os.environ.get("DATABASE_URL")
     if not db_url:
