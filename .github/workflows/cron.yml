@@ -1,15 +1,29 @@
-name: Hourly News Fetcher
+name: Hourly News Fetcher & Database Updater
 
 on:
   schedule:
-    - cron: '0 * * * *' # Runs at minute 0 of every hour
-  workflow_dispatch: # Allows you to trigger it manually from the GitHub UI
+    - cron: '0 * * * *'
+  workflow_dispatch:
 
 jobs:
   update-database:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Vercel Update Route
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
         run: |
-          curl -X GET "${{ secrets.API_URL }}/api/cron/update" \
-          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
+          python -m pip install --upgrade pip
+          pip install pandas sqlalchemy psycopg2-binary feedparser aiohttp python-dotenv
+
+      - name: Run Pipeline and Update Neon Database
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          python seed.py
