@@ -6,6 +6,7 @@ from sqlalchemy import create_engine
 import json
 from fetch_news import get_all_news
 from process_data_india import process_and_push_to_db
+from fastapi.responses import FileResponse
 
 app = FastAPI(
     title="Internal Bharat News API", 
@@ -19,6 +20,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return FileResponse("favicon.ico")
 
 @app.get("/")
 async def root():
